@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-03-2019 a las 23:38:13
+-- Tiempo de generación: 27-03-2019 a las 04:52:03
 -- Versión del servidor: 10.1.32-MariaDB
--- Versión de PHP: 5.6.36
+-- Versión de PHP: 7.2.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -40,6 +40,14 @@ CREATE TABLE `owner` (
   `postalcode` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Volcado de datos para la tabla `owner`
+--
+
+INSERT INTO `owner` (`id`, `emai`, `password`, `name`, `lastname`, `phonenumber`, `state`, `city`, `postalcode`) VALUES
+(1, 'sergio1999.com@gmail.com', '1234', 'Sergio', 'Gonzalez', '6645998007', 1, 1, 1),
+(2, 'Laura@gmail.ccom', '123', 'Laura', 'Portillo', '123123', 1, 2, 3);
+
 -- --------------------------------------------------------
 
 --
@@ -57,6 +65,15 @@ CREATE TABLE `pet` (
   `weight` decimal(10,0) NOT NULL,
   `idowner` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `pet`
+--
+
+INSERT INTO `pet` (`id`, `name`, `gender`, `breed`, `neutered`, `Birth`, `height`, `weight`, `idowner`) VALUES
+(3, 'Caramelo', 'male', 'Pastor verga', 'No', '2019-01-15', '2', '7', 1),
+(4, 'Federico', 'male', 'Pastor', 'Yes', '2019-01-15', '1', '8', 1),
+(5, 'X', 'Female', 'Mix', 'No', '2019-01-15', '5', '2', 2);
 
 -- --------------------------------------------------------
 
@@ -79,6 +96,14 @@ CREATE TABLE `walker` (
   `postalcode` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Volcado de datos para la tabla `walker`
+--
+
+INSERT INTO `walker` (`id`, `email`, `password`, `name`, `lastname`, `phonenumber`, `ocupation`, `age`, `rating`, `state`, `city`, `postalcode`) VALUES
+(1, 'juan@gmail.com', '12345', 'Juan', 'Perez', '1232435', 'Student', 19, 5, 'Baja California', 'Tijuas', 123),
+(2, 'Pedro@gmail.com', '123456', 'Pedro', 'Martinez', '664588900', 'Student', 16, 3, 'Baja California', 'Tijuana', 123);
+
 -- --------------------------------------------------------
 
 --
@@ -90,6 +115,13 @@ CREATE TABLE `walker_pet` (
   `idwalker` int(11) NOT NULL,
   `idpet` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `walker_pet`
+--
+
+INSERT INTO `walker_pet` (`id`, `idwalker`, `idpet`) VALUES
+(1, 1, 3);
 
 -- --------------------------------------------------------
 
@@ -107,6 +139,13 @@ CREATE TABLE `walk_detail` (
   `date` date NOT NULL,
   `time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `walk_detail`
+--
+
+INSERT INTO `walk_detail` (`id`, `idpet`, `idwalker`, `status`, `payment`, `distance`, `date`, `time`) VALUES
+(1, 3, 1, 1, '10', 1, '2019-03-07', 1);
 
 --
 -- Índices para tablas volcadas
@@ -155,31 +194,31 @@ ALTER TABLE `walk_detail`
 -- AUTO_INCREMENT de la tabla `owner`
 --
 ALTER TABLE `owner`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `pet`
 --
 ALTER TABLE `pet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `walker`
 --
 ALTER TABLE `walker`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `walker_pet`
 --
 ALTER TABLE `walker_pet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `walk_detail`
 --
 ALTER TABLE `walk_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Restricciones para tablas volcadas
