@@ -1,0 +1,6 @@
+{
+    "server" :"localhost",
+    "database" :"petwalk",
+    "user" :"root",
+    "password" :""
+}
