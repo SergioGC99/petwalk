@@ -1,5 +1,7 @@
 <?php
 require_once('connection.php');
+require_once('pet.php');
+
 require_once('exceptions/recordnotfoundexception.php');
 Class Owner{
 	    
@@ -110,6 +112,26 @@ Class Owner{
         'postalcode'=>$this->postalcode
         ));	
     }
+    public function toJsonFull(){
+        //pets
+        $pet = array();
+        foreach($this->getPets() as $item){
+            array_push($pet, json_decode($item->toJson()));
+        }
+       
+        return json_encode(array(
+            'id'=>$this->id,
+        'email'=>$this->email,
+        'password'=>$this->password,
+        'name'=>$this->name,
+        'lastname'=>$this->lastname,
+        'phonenumber'=>$this->phonenumber,
+        'state'=>$this->state,
+        'city'=>$this->city,
+        'postalcode'=>$this->postalcode,
+            'pets' =>$pet
+        ));
+    }
 
     public function getAll() {
 		$list =  array();
@@ -158,11 +180,7 @@ Class Owner{
              //get connection
              $connection = MySqlConnection::getConnection();
              //query
-             $query='select o.id, o.emai,o.password,o.name,o.lastname,o.phonenumber,o.state,o.city,
-             o.postalcode,p.id, p.name,p.gender,p.breed,p.neutered,p.Birth,p.height,p.weight 
-             from owner as o 
-             join pet as p on o.id = p.idowner 
-             where o.id = ? ';
+             $query='select id, name,gender,breed,neutered,Birth,height,weight from pet where idowner = ? ';
             //prepare statement
             $command = $connection->prepare($query);
             //bind params
@@ -170,11 +188,11 @@ Class Owner{
 			//execute
 			$command->execute();
 			//bind results
-			$command->bind_result($id,$email,$password,$name,$lastname,$phonenumber,$state,$city,$postalcode);
+			$command->bind_result($id,$name,$gender,$breed,$neutered,$birth,$height,$weight);
 			//fetch data
 			while ($command->fetch()) {
                 //add contact to list
-				array_push($list, new Pet());
+				array_push($list, new Pet($id,$name,$gender,$breed,$neutered,$birth,$height,$weight));
             }
             //close command
             mysqli_stmt_close($command);

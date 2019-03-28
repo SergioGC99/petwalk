@@ -8,7 +8,7 @@
                 $c = new Owner($parameters);
                 echo json_encode(array(
                     'status' => 0,
-                    'owner' => json_decode($c->toJson())
+                    'owner' => json_decode($c->toJsonFull())
                 ));
             }
             catch(RecordNotFoundException $ex) {
