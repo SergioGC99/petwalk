@@ -12,6 +12,10 @@ require_once('exceptions/recordnotfoundexception.php');
         private $ocupation;
         private $age;
         private $rating;
+        private $state;
+        private $city;
+        private $postalcode;
+        private $image;
 
         //getters and setters
         public function getId() {return $this->id;}
@@ -36,11 +40,21 @@ require_once('exceptions/recordnotfoundexception.php');
         public function setOcupation() {$this->ocupation = $ocupation;}
 
         public function getAge() {return $this->age;}
-        public function setAge($ocupation) {$this->age = $age;}
+        public function setAge($age) {$this->age = $age;}
 
         public function getRating() {return $this->rating;}
-        public function setRating($ocupation) {$this->rating = $rating;}
+        public function setRating($rating) {$this->rating = $rating;}
 
+
+        public function getState(){return $this->state;}
+        public function setState($state){$this->state=$state;}
+        public function getCity(){return $this->city;}
+        public function setCity($city){$this->city=$city;}
+        public function getPostalCode(){return $this->postalcode;}
+        public function setPostalCode($postalcode){$this->postalcode=$postalcode;}
+
+        public function getImage() {return $this->image;}
+        public function setImage($image) {$this->image = $image;}
         //constructor
         public function __construct() {
             if(func_num_args()){
@@ -52,16 +66,24 @@ require_once('exceptions/recordnotfoundexception.php');
                 $this->phonenumber = '';
                 $this->ocupation = '';
                 $this->age = '';
-                $this->rating = '';
+                $this->rating = "";
+
+                $this->state = '';
+                $this->city = '';
+                $this->postalcode = "";
+                $this->image = '';
+
+
             }
             if(func_num_args() == 1){
                 $connection = MySqlConnection::getConnection(); //get connection
-                $query = 'select id, email, password, name, lastname, phonenumber, ocupation, age, rating from walker where id = ?'; //query
+                $query = 'select id, email, password, name, lastname, phonenumber, ocupation, age, rating, state,city,postalcode, image 
+                from walker where id = ?'; //query
                 $command = $connection->prepare($query); //prepare statement
                 $x = func_get_arg(0);
                 $command->bind_param('i', $x); //parameters
                 $command->execute(); //execute
-                $command->bind_result($id, $email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating); //bind results
+                $command->bind_result($id, $email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating,$state,$city,$postalcode,$image); //bind results
                 //record was found
                 if ($command->fetch()) {
                     //pass values to the attributes
@@ -74,6 +96,10 @@ require_once('exceptions/recordnotfoundexception.php');
                     $this->ocupation = $ocupation;
                     $this->age = $age;
                     $this->rating = $rating;
+                    $this->state = $state;
+                    $this->city = $city;
+                    $this->postalcode = $postalcode;
+                    $this->image = $image;
                 }
                 else
                     throw new RecordNotFoundException(func_get_arg(0));
@@ -82,7 +108,7 @@ require_once('exceptions/recordnotfoundexception.php');
                 //close connection
                 $connection->close();
             }
-            if(func_num_args() == 9) {
+            if(func_num_args() == 13) {
                 $this->id = func_get_arg(0);
                 $this->email = func_get_arg(1);
                 $this->password = func_get_arg(2);
@@ -92,10 +118,18 @@ require_once('exceptions/recordnotfoundexception.php');
                 $this->ocupation = func_get_arg(6);
                 $this->age = func_get_arg(7);
                 $this->rating = func_get_arg(8);
+                $this->state = func_get_arg(9);
+                $this->city = func_get_arg(10);
+                $this->postalcode = func_get_arg(11);
+                $this->image = func_get_arg(12);
             }
         }
 
         public function toJson() {
+            $phpSelf = $_SERVER['PHP_SELF'];
+            $urlParts = explode('/', $phpSelf);
+            $lengthLastPart = strlen($urlParts[sizeof($urlParts)-1]);
+            $photosPath = substr($phpSelf,0,strlen($phpSelf)- $lengthLastPart);
             return json_encode(array(
                 'id' => $this->id,
                 'email' => $this->email,
@@ -105,7 +139,11 @@ require_once('exceptions/recordnotfoundexception.php');
                 'phonenumber'=>$this->phonenumber,
                 'ocupation'=>$this->ocupation,
                 'age'=>$this->age,
-                'rating'=>$this->rating
+                'rating'=>$this->rating,
+                'state'=>$this->state,
+                'city'=>$this->city,
+                'postalcode'=>$this->postalcode,
+        'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image
             ));
         }
 
@@ -115,17 +153,18 @@ require_once('exceptions/recordnotfoundexception.php');
             //get connection
 			$connection = MySqlConnection::getConnection();
 			//query
-			$query = 'select id, email, password, name, lastname, phonenumber, ocupation, age, rating from Walker';
+			$query = 'select id, email, password, name, lastname, phonenumber, ocupation, age, rating, state,city,postalcode,image 
+            from walker';
 			//prepare statement
 			$command = $connection->prepare($query);
 			//execute
 			$command->execute();
 			//bind results
-			$command->bind_result($id, $email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating);
+			$command->bind_result($id, $email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating,$state,$city,$postalcode,$image);
 			//fetch data
 			while ($command->fetch()) {
 				//add contact to list
-				array_push($list, new Walker($id, $email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating));
+				array_push($list, new Walker($id,$email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating,$state,$city,$postalcode,$image));
 			}
             return $list; //return list
         }
@@ -140,27 +179,32 @@ require_once('exceptions/recordnotfoundexception.php');
             return json_encode($jsonArray); //return JSON array
         }
 
-        public function add(){
+        public function getPets(){
             $list = array();
              //get connection
              $connection = MySqlConnection::getConnection();
-             //statement
-             $statement='insert into walker (id, email, password, name, lastname, phonenumber, ocupation, age, rating) values (NULL, ?, ?, ?, ?, ?, ?, ?, ?)';
-             //prepare statement
-             $command = $connection->prepare($statement);
-             //bind params
-             $command->bind_param('s', $this->email, $this->password, $this->name, $this->lastname, $this->phonenumber, $this->ocupation, $this->age, $this->rating);
-             //execute
-             $result= $command->execute();
-            
-              //Close Command
+             //query
+             $query='select id,name,gender,breed,neutered,Birth,height,weight,image from pet where idowner = ? ';
+            //prepare statement
+            $command = $connection->prepare($query);
+            //bind params
+            $command->bind_param('i', $this->id);
+			//execute
+			$command->execute();
+			//bind results
+			$command->bind_result($id,$name,$gender,$breed,$neutered,$birth,$height,$weight,$image);
+			//fetch data
+			while ($command->fetch()) {
+                //add contact to list
+				array_push($list, new Pet($id,$name,$gender,$breed,$neutered,$birth,$height,$weight,$image));
+            }
+            //close command
             mysqli_stmt_close($command);
             //close connection
             $connection->close();
-            //return result
-            return $result;
-        } 
-        
+            //return list
+            return $list; 
+        }
 
     }
 ?>    

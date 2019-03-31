@@ -87,7 +87,7 @@ class Pet
             //close connection
             $connection->close();
         }
-        if (func_num_args() == 8) {
+        if (func_num_args() == 9) {
 			//object with data from the argument
             $this->id = func_get_arg(0); //first argument received
             $this->name = func_get_arg(1); //second argument received
@@ -118,8 +118,6 @@ class Pet
             'height' => $this->height,
             'weight' => $this->weight,
             'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image
-
-            
 			));
         }
 

@@ -30,18 +30,16 @@ Class Owner{
     public function setLastname($lastname){$this->lastname=$lastname;}
     public function getPhonenumber(){return $this->phonenumber;}
     public function setPhonenumber($phonenumber){$this->phonenumber=$phonenumber;}
-    
     public function getState(){return $this->state;}
     public function setState($state){$this->state=$state;}
-    
-
     public function getCity(){return $this->city;}
     public function stetCity($city){$this->city=$city;}
-    
-
     public function getPostalCode(){return $this->postalcode;}
     public function setPostalCode($postalcode){$this->postalcode=$postalcode;}
     
+
+    public function getImage(){return $this->image;}
+    public function setImage($image){$this->image=$image;}
     //constructors
     public function __construct() {
 		
@@ -55,17 +53,19 @@ Class Owner{
             $this->phonenumber='';
             $this->state='';
             $this->city='';
-            $this->postalcode='';
+            $this->postalcode=0;
+            $this->image='';
+
 		}
 		
 		if(func_num_args()==1) {
 				$connection = MySqlConnection::getConnection();
-				$query = 'select id, emai, password, name,lastname,phonenumber,state, city,postalcode from owner where id = ?';
+				$query = 'select id, email, password, name,lastname,phonenumber,state, city,postalcode, image from owner where id = ?';
                 $command = $connection->prepare($query);
                 $x = func_get_arg(0);
 				$command->bind_param('i', $x);
 				$command->execute();
-				$command->bind_result($id,$email,$password,$name,$lastname,$phonenumber,$state,$city,$postalcode);
+				$command->bind_result($id,$email,$password,$name,$lastname,$phonenumber,$state,$city,$postalcode,$image);
 				if ($command->fetch()) {
 					$this->id = $id;
 					$this->email=$email;
@@ -76,6 +76,8 @@ Class Owner{
                     $this->state = $state;
                     $this->city=$city;
                     $this->postalcode=$postalcode;
+                    $this->image=$image;
+
 				}
 				else
 					throw new RecordNotFoundException(func_get_arg(0));
@@ -85,7 +87,7 @@ Class Owner{
 				$connection->close();
 			}
 		
-		if(func_num_args()==9) {
+		if(func_num_args()==10) {
 			
             $this->id=func_get_arg(0);
             $this->email=func_get_arg(1);
@@ -96,11 +98,16 @@ Class Owner{
             $this->state=func_get_arg(6);
             $this->city=func_get_arg(7);
             $this->postalcode=func_get_arg(8);
+            $this->image=func_get_arg(9);
+
 		}
 	}
 
     public function toJson() {
-			
+        $phpSelf = $_SERVER['PHP_SELF'];
+        $urlParts = explode('/', $phpSelf);
+        $lengthLastPart = strlen($urlParts[sizeof($urlParts)-1]);
+        $photosPath = substr($phpSelf,0,strlen($phpSelf)- $lengthLastPart);
         return json_encode ( array (
         'id'=>$this->id,
         'email'=>$this->email,
@@ -110,7 +117,10 @@ Class Owner{
         'phonenumber'=>$this->phonenumber,
         'state'=>$this->state,
         'city'=>$this->city,
-        'postalcode'=>$this->postalcode
+        'postalcode'=>$this->postalcode,
+        'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image
+      
+
         ));	
     }
     public function toJsonFull(){
@@ -137,12 +147,12 @@ Class Owner{
     public function getAll() {
 		$list =  array();
 		$connection = MySqlConnection::getConnection();
-		$query = 'select id, emai, password, name,lastname,phonenumber,state, city,postalcode from owner';
+		$query = 'select id, email, password, name,lastname,phonenumber,state, city,postalcode, image from owner';
 		$command = $connection->prepare($query);
 		$command->execute();
-		$command->bind_result($id,$email,$password,$name,$lastname,$phonenumber,$state,$city,$postalcode);
+		$command->bind_result($id,$email,$password,$name,$lastname,$phonenumber,$state,$city,$postalcode,$image);
 		while($command->fetch()){
-			array_push($list , new Owner ($id,$email,$password,$name,$lastname,$phonenumber,$state,$city,$postalcode));
+			array_push($list , new Owner ($id,$email,$password,$name,$lastname,$phonenumber,$state,$city,$postalcode,$image));
 		}
 		return $list;
 	}
@@ -155,33 +165,13 @@ Class Owner{
         return json_encode($jsonArray); //return array
 
      }
-        public function add(){
-            $list = array();
-             //get connection
-             $connection = MySqlConnection::getConnection();
-             //statement
-             $statement='insert into owner (id, email, password, name, lastname, phonenumber) values (NULL, ?, ?, ?, ?, ?)';
-             //prepare statement
-             $command = $connection->prepare($statement);
-             //bind params
-             $command->bind_param('s', $this->email, $this->password, $this->name, $this->lastname, $this->phonenumber);
-             //execute
-             $result= $command->execute();
-            
-              //Close Command
-            mysqli_stmt_close($command);
-            //close connection
-            $connection->close();
-            //return result
-            return $result;
-        } 
-
+        
         public function getPets(){
             $list = array();
              //get connection
              $connection = MySqlConnection::getConnection();
              //query
-             $query='select id, name,gender,breed,neutered,Birth,height,weight from pet where idowner = ? ';
+             $query='select id,name,gender,breed,neutered,Birth,height,weight,image from pet where idowner = ? ';
             //prepare statement
             $command = $connection->prepare($query);
             //bind params
@@ -189,11 +179,11 @@ Class Owner{
 			//execute
 			$command->execute();
 			//bind results
-			$command->bind_result($id,$name,$gender,$breed,$neutered,$birth,$height,$weight);
+			$command->bind_result($id,$name,$gender,$breed,$neutered,$birth,$height,$weight,$image);
 			//fetch data
 			while ($command->fetch()) {
                 //add contact to list
-				array_push($list, new Pet($id,$name,$gender,$breed,$neutered,$birth,$height,$weight));
+				array_push($list, new Pet($id,$name,$gender,$breed,$neutered,$birth,$height,$weight,$image));
             }
             //close command
             mysqli_stmt_close($command);
