@@ -1,5 +1,7 @@
 <?php
 require_once('connection.php');
+require_once('pet.php');
+
 require_once('exceptions/recordnotfoundexception.php');
     class Walker{
         //atributes
@@ -148,6 +150,31 @@ require_once('exceptions/recordnotfoundexception.php');
         }
 
 
+
+        public function toJsonFull(){
+            //pets
+            $pet = array();
+            foreach($this->getPets() as $item){
+                array_push($pet, json_decode($item->toJson()));
+            }
+           
+            return json_encode(array(
+                'id' => $this->id,
+                'email' => $this->email,
+                'password'=>$this->password,
+                'name' => $this->name,
+                'lastname'=>$this->lastname,
+                'phonenumber'=>$this->phonenumber,
+                'ocupation'=>$this->ocupation,
+                'age'=>$this->age,
+                'rating'=>$this->rating,
+                'state'=>$this->state,
+                'city'=>$this->city,
+                'postalcode'=>$this->postalcode,
+            'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image,
+                'pets' =>$pet
+            ));
+        }
         public static function getAll() {
             $list = array(); //create list
             //get connection
@@ -184,7 +211,9 @@ require_once('exceptions/recordnotfoundexception.php');
              //get connection
              $connection = MySqlConnection::getConnection();
              //query
-             $query='select id,name,gender,breed,neutered,Birth,height,weight,image from pet where idowner = ? ';
+             $query='select p.id,p.name,p.gender,p.breed,p.neutered,p.Birth,p.height,p.weight,p.image
+             from pet as p join walker_pet on  p.id = walker_pet.idpet
+             join walker on walker.id = walker_pet.idwalker where idwalker = ? ';
             //prepare statement
             $command = $connection->prepare($query);
             //bind params

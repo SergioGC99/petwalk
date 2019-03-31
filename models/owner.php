@@ -140,6 +140,7 @@ Class Owner{
         'state'=>$this->state,
         'city'=>$this->city,
         'postalcode'=>$this->postalcode,
+        'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image,
             'pets' =>$pet
         ));
     }

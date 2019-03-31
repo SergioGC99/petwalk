@@ -8,7 +8,7 @@
                 $c = new Walker($parameters);
                 echo json_encode(array(
                     'status' => 0,
-                    'walker' => json_decode($c->toJson())
+                    'walker' => json_decode($c->toJsonFull())
                 ));
             }
             catch(RecordNotFoundException $ex) {
