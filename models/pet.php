@@ -11,7 +11,6 @@ class Pet
     private $dateOfBirth;
     private $neutered;
     private $height;
-
     private $image;
     //getters and setters
     public function getId(){return $this->id;}
@@ -32,7 +31,8 @@ class Pet
     public function setHeight($height){ $this->height = $height;}
 
     public function getWeight(){ return $this->weight;}
-    public function setWeight($image){ $this->image = $image;}
+    public function setWeight($weight){ $this->weight = $weight;}
+
     public function getImage(){ return $this->image;}
     public function setImage($image){ $this->image = $image;}
 
@@ -104,6 +104,10 @@ class Pet
 
      //methods
 		public function toJson(){
+            $phpSelf = $_SERVER['PHP_SELF'];
+            $urlParts = explode('/', $phpSelf);
+            $lengthLastPart = strlen($urlParts[sizeof($urlParts)-1]);
+            $photosPath = substr($phpSelf,0,strlen($phpSelf)- $lengthLastPart);
 			return json_encode(array(
 			'id' => $this->id,
             'name' => $this->name,
@@ -113,12 +117,14 @@ class Pet
             'dateOfBirth' => $this->dateOfBirth,
             'height' => $this->height,
             'weight' => $this->weight,
-            'image' => $this->image
+            'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image
 
             
 			));
         }
 
+
+      
         public static function getAll(){
             $list = array();
             $connection = MySqlConnection::getConnection();
