@@ -11,8 +11,8 @@ class Pet
     private $dateOfBirth;
     private $neutered;
     private $height;
-    private $weight;
 
+    private $image;
     //getters and setters
     public function getId(){return $this->id;}
     public function setId($id){ $this->id = $id;}
@@ -32,7 +32,9 @@ class Pet
     public function setHeight($height){ $this->height = $height;}
 
     public function getWeight(){ return $this->weight;}
-    public function setWeight($weight){ $this->weight = $weight;}
+    public function setWeight($image){ $this->image = $image;}
+    public function getImage(){ return $this->image;}
+    public function setImage($image){ $this->image = $image;}
 
     //constructor
     public function __construct()
@@ -48,12 +50,14 @@ class Pet
             $this->dateOfBirth = "";
             $this->height = "";
             $this->weight = "";
+            $this->image = "";
+
         }
         if (func_num_args() == 1) {
             //get connection
             $connection = MySqlConnection::getConnection();
             //query
-            $query = 'select id, name, gender,breed,neutered,Birth,height,weight from pet where id = ?';
+            $query = 'select id, name, gender,breed,neutered,Birth,height,weight, image from pet where id = ?';
             //prepare statement
             $command = $connection->prepare($query);
             //parameters
@@ -62,7 +66,7 @@ class Pet
             //execute
             $command->execute();
             //bind result
-            $command->bind_result($id,$name,$gender,$breed,$neutered,$dateOfBirth,$height,$weight);
+            $command->bind_result($id,$name,$gender,$breed,$neutered,$dateOfBirth,$height,$weight,$image);
             //record was found
             if ($command->fetch()) {
                 //pass values to the attributes
@@ -74,6 +78,8 @@ class Pet
                 $this->dateOfBirth = $dateOfBirth;
                 $this->height = $height;
                 $this->weight = $weight;
+                $this->image = $image;
+
             } else
                 throw new RecordNotFoundException();
             //close command
@@ -91,6 +97,8 @@ class Pet
             $this->dateOfBirth = func_get_arg(5); //fifth argument received
             $this->height = func_get_arg(6); //sixth argument received
             $this->weight = func_get_arg(7); //seventh argument received
+            $this->image = func_get_arg(8); //heigth argument received
+
         }
     }
 
@@ -104,7 +112,9 @@ class Pet
             'neutered' => $this->neutered,
             'dateOfBirth' => $this->dateOfBirth,
             'height' => $this->height,
-            'weight' => $this->weight
+            'weight' => $this->weight,
+            'image' => $this->image
+
             
 			));
         }
@@ -112,14 +122,14 @@ class Pet
         public static function getAll(){
             $list = array();
             $connection = MySqlConnection::getConnection();
-            $query ='select id, name, gender,breed,neutered,Birth,height,weight from pet ';
+            $query ='select id, name, gender,breed,neutered,Birth,height,weight,image from pet ';
             $command =$connection->prepare($query);
             
             $command->execute();
-            $command->bind_result($id,$name,$gender,$breed,$neutered,$dateOfBirth,$height,$weight);
+            $command->bind_result($id,$name,$gender,$breed,$neutered,$dateOfBirth,$height,$weight,$image);
 
             while($command->fetch()){
-                array_push($list, new Pet($id,$name,$gender,$breed,$neutered,$dateOfBirth,$height,$weight));
+                array_push($list, new Pet($id,$name,$gender,$breed,$neutered,$dateOfBirth,$height,$weight,$image));
             }
             return $list;
         }
