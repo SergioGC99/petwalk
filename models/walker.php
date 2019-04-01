@@ -157,7 +157,10 @@ require_once('exceptions/recordnotfoundexception.php');
             foreach($this->getPets() as $item){
                 array_push($pet, json_decode($item->toJson()));
             }
-           
+            $phpSelf = $_SERVER['PHP_SELF'];
+            $urlParts = explode('/', $phpSelf);
+            $lengthLastPart = strlen($urlParts[sizeof($urlParts)-1]);
+            $photosPath = substr($phpSelf,0,strlen($phpSelf)- $lengthLastPart);
             return json_encode(array(
                 'id' => $this->id,
                 'email' => $this->email,
@@ -171,7 +174,7 @@ require_once('exceptions/recordnotfoundexception.php');
                 'state'=>$this->state,
                 'city'=>$this->city,
                 'postalcode'=>$this->postalcode,
-            'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image,
+                'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image,
                 'pets' =>$pet
             ));
         }
