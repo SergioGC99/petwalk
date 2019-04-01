@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-03-2019 a las 04:52:03
+-- Tiempo de generación: 01-04-2019 a las 20:25:01
 -- Versión del servidor: 10.1.32-MariaDB
 -- Versión de PHP: 7.2.5
 
@@ -25,28 +25,50 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `notification`
+--
+
+CREATE TABLE `notification` (
+  `id` int(11) NOT NULL,
+  `idowner` int(11) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `idwalker` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `notification`
+--
+
+INSERT INTO `notification` (`id`, `idowner`, `description`, `idwalker`, `status`) VALUES
+(1, 1, 'Hi, I need a walk for my puppy', 1, 0);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `owner`
 --
 
 CREATE TABLE `owner` (
   `id` int(11) NOT NULL,
-  `emai` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
   `password` varchar(30) NOT NULL,
   `name` varchar(30) NOT NULL,
   `lastname` varchar(30) NOT NULL,
   `phonenumber` varchar(20) NOT NULL,
-  `state` int(11) NOT NULL,
-  `city` int(11) NOT NULL,
-  `postalcode` int(11) NOT NULL
+  `state` varchar(40) NOT NULL,
+  `city` varchar(40) NOT NULL,
+  `postalcode` int(11) NOT NULL,
+  `image` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `owner`
 --
 
-INSERT INTO `owner` (`id`, `emai`, `password`, `name`, `lastname`, `phonenumber`, `state`, `city`, `postalcode`) VALUES
-(1, 'sergio1999.com@gmail.com', '1234', 'Sergio', 'Gonzalez', '6645998007', 1, 1, 1),
-(2, 'Laura@gmail.ccom', '123', 'Laura', 'Portillo', '123123', 1, 2, 3);
+INSERT INTO `owner` (`id`, `email`, `password`, `name`, `lastname`, `phonenumber`, `state`, `city`, `postalcode`, `image`) VALUES
+(1, 'prueba', '12354', 'Carlos', 'Yair', '6642528128', 'Baja California', 'Tijuana', 22160, ''),
+(2, 'sergio@gmail.com', '123', 'Sergio', 'Gonzalez', '6645998007', 'Baja California', 'Tijuana', 123, 'sergio.jpg');
 
 -- --------------------------------------------------------
 
@@ -63,17 +85,18 @@ CREATE TABLE `pet` (
   `Birth` date NOT NULL,
   `height` decimal(10,0) NOT NULL,
   `weight` decimal(10,0) NOT NULL,
-  `idowner` int(11) NOT NULL
+  `idowner` int(11) NOT NULL,
+  `image` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `pet`
 --
 
-INSERT INTO `pet` (`id`, `name`, `gender`, `breed`, `neutered`, `Birth`, `height`, `weight`, `idowner`) VALUES
-(3, 'Caramelo', 'male', 'Pastor verga', 'No', '2019-01-15', '2', '7', 1),
-(4, 'Federico', 'male', 'Pastor', 'Yes', '2019-01-15', '1', '8', 1),
-(5, 'X', 'Female', 'Mix', 'No', '2019-01-15', '5', '2', 2);
+INSERT INTO `pet` (`id`, `name`, `gender`, `breed`, `neutered`, `Birth`, `height`, `weight`, `idowner`, `image`) VALUES
+(2, 'sdgsege', 'macho', 'yes', 'yes', '2019-03-11', '1', '5', 1, ''),
+(3, 'Caramelo', 'male', 'Pastor', 'No', '2019-01-15', '2', '8', 2, 'caramelo.jpg'),
+(4, 'Federico', 'male', 'Mix', 'No', '2019-01-15', '2', '7', 2, 'x.jpg');
 
 -- --------------------------------------------------------
 
@@ -93,16 +116,17 @@ CREATE TABLE `walker` (
   `rating` int(11) NOT NULL,
   `state` varchar(40) NOT NULL,
   `city` varchar(40) NOT NULL,
-  `postalcode` int(11) NOT NULL
+  `postalcode` int(11) NOT NULL,
+  `image` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `walker`
 --
 
-INSERT INTO `walker` (`id`, `email`, `password`, `name`, `lastname`, `phonenumber`, `ocupation`, `age`, `rating`, `state`, `city`, `postalcode`) VALUES
-(1, 'juan@gmail.com', '12345', 'Juan', 'Perez', '1232435', 'Student', 19, 5, 'Baja California', 'Tijuas', 123),
-(2, 'Pedro@gmail.com', '123456', 'Pedro', 'Martinez', '664588900', 'Student', 16, 3, 'Baja California', 'Tijuana', 123);
+INSERT INTO `walker` (`id`, `email`, `password`, `name`, `lastname`, `phonenumber`, `ocupation`, `age`, `rating`, `state`, `city`, `postalcode`, `image`) VALUES
+(1, 'prueba2', '12345', 'pedrito', 'juarez', '662355226', 'doctor', 25, 4, 'Baja California', 'Tijuana', 22160, ''),
+(2, 'juan@gmail.com', '123', 'Angel', 'GG', '1232435', 'Studen', 19, 5, 'Baja California', 'Tijuana', 1234, 'x.jpg');
 
 -- --------------------------------------------------------
 
@@ -121,7 +145,7 @@ CREATE TABLE `walker_pet` (
 --
 
 INSERT INTO `walker_pet` (`id`, `idwalker`, `idpet`) VALUES
-(1, 1, 3);
+(1, 2, 3);
 
 -- --------------------------------------------------------
 
@@ -132,24 +156,33 @@ INSERT INTO `walker_pet` (`id`, `idwalker`, `idpet`) VALUES
 CREATE TABLE `walk_detail` (
   `id` int(11) NOT NULL,
   `idpet` int(11) NOT NULL,
-  `idwalker` int(11) NOT NULL,
+  `idnotification` int(11) NOT NULL,
   `status` tinyint(1) NOT NULL,
   `payment` decimal(10,0) NOT NULL,
   `distance` double NOT NULL,
-  `date` date NOT NULL,
-  `time` int(11) NOT NULL
+  `date` datetime NOT NULL,
+  `time` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `walk_detail`
 --
 
-INSERT INTO `walk_detail` (`id`, `idpet`, `idwalker`, `status`, `payment`, `distance`, `date`, `time`) VALUES
-(1, 3, 1, 1, '10', 1, '2019-03-07', 1);
+INSERT INTO `walk_detail` (`id`, `idpet`, `idnotification`, `status`, `payment`, `distance`, `date`, `time`) VALUES
+(1, 2, 1, 1, '10', 2000, '2019-03-19 00:00:00', '01:00:00'),
+(2, 4, 1, 1, '100', 1, '2019-03-07 00:00:00', '01:00:00');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `notification`
+--
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idowner` (`idowner`),
+  ADD KEY `idwalker` (`idwalker`);
 
 --
 -- Indices de la tabla `owner`
@@ -184,11 +217,17 @@ ALTER TABLE `walker_pet`
 ALTER TABLE `walk_detail`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idpet` (`idpet`),
-  ADD KEY `idwalker` (`idwalker`);
+  ADD KEY `idnotification` (`idnotification`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
+
+--
+-- AUTO_INCREMENT de la tabla `notification`
+--
+ALTER TABLE `notification`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `owner`
@@ -200,7 +239,7 @@ ALTER TABLE `owner`
 -- AUTO_INCREMENT de la tabla `pet`
 --
 ALTER TABLE `pet`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `walker`
@@ -218,11 +257,18 @@ ALTER TABLE `walker_pet`
 -- AUTO_INCREMENT de la tabla `walk_detail`
 --
 ALTER TABLE `walk_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `notification`
+--
+ALTER TABLE `notification`
+  ADD CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`idowner`) REFERENCES `owner` (`id`),
+  ADD CONSTRAINT `notification_ibfk_2` FOREIGN KEY (`idwalker`) REFERENCES `walker` (`id`);
 
 --
 -- Filtros para la tabla `pet`
@@ -242,7 +288,7 @@ ALTER TABLE `walker_pet`
 --
 ALTER TABLE `walk_detail`
   ADD CONSTRAINT `walk_detail_ibfk_1` FOREIGN KEY (`idpet`) REFERENCES `pet` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `walk_detail_ibfk_2` FOREIGN KEY (`idwalker`) REFERENCES `walker` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `walk_detail_ibfk_2` FOREIGN KEY (`idnotification`) REFERENCES `notification` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
