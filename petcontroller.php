@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $c = new Pet($parameters);
             echo json_encode(array(
                 'status' => 0,
-                'pet' => json_decode($c->toJson())
+                'pet' => json_decode($c->toJsonFull())
             ));
         }
         catch(RecordNotFoundException $ex) {

@@ -121,6 +121,29 @@ class Pet
 			));
         }
 
+        public function toJsonFull(){
+            //pets
+            $walker = array();
+            foreach($this->getPets() as $item){
+                array_push($pet, json_decode($item->toJson()));
+            }
+            $phpSelf = $_SERVER['PHP_SELF'];
+            $urlParts = explode('/', $phpSelf);
+            $lengthLastPart = strlen($urlParts[sizeof($urlParts)-1]);
+            $photosPath = substr($phpSelf,0,strlen($phpSelf)- $lengthLastPart);
+			return json_encode(array(
+			'id' => $this->id,
+            'name' => $this->name,
+            'gender' => $this->gender,
+            'breed' => $this->breed,
+            'neutered' => $this->neutered,
+            'dateOfBirth' => $this->dateOfBirth,
+            'height' => $this->height,
+            'weight' => $this->weight,
+            'image' => 'http://'.$_SERVER['HTTP_HOST'].$photosPath.'images/'.$this->image,
+            'walker'=> $walker
+            ));
+        }
 
       
         public static function getAll(){
@@ -145,6 +168,36 @@ class Pet
             return json_encode($jsonArray); //return array
 
          }
+
+         public function getWalker(){
+            $list = array();
+             //get connection
+             $connection = MySqlConnection::getConnection();
+             //query
+             $query='select w.id,w.email,w.password,w.name,w.lastname,w.phonenumber,
+             w.ocupation, w.age, w.rating,w.state,w.city,w.postalcode,w.image 
+             from walker as w join walker_pet on w.id = walker_pet.idwalker join pet on pet.id = walker_pet.idpet
+             where idpet = ? ';
+            //prepare statement
+            $command = $connection->prepare($query);
+            //bind params
+            $command->bind_param('i', $this->id);
+			//execute
+			$command->execute();
+			//bind results
+			$command->bind_result($id, $email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating,$state,$city,$postalcode,$image);
+			//fetch data
+			while ($command->fetch()) {
+                //add contact to list
+				array_push($list, new Walker($id, $email, $password, $name, $lastname, $phonenumber, $ocupation, $age, $rating,$state,$city,$postalcode,$image));
+            }
+            //close command
+            mysqli_stmt_close($command);
+            //close connection
+            $connection->close();
+            //return list
+            return $list; 
+        }
     
 }
 ?>
