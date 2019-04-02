@@ -1,5 +1,7 @@
 <?php
 require_once('connection.php');
+require_once('walker.php');
+
 require_once('exceptions/recordnotfoundexception.php');
 class Pet
 {
@@ -124,8 +126,8 @@ class Pet
         public function toJsonFull(){
             //pets
             $walker = array();
-            foreach($this->getPets() as $item){
-                array_push($pet, json_decode($item->toJson()));
+            foreach($this->getWalker() as $item){
+                array_push($walker, json_decode($item->toJson()));
             }
             $phpSelf = $_SERVER['PHP_SELF'];
             $urlParts = explode('/', $phpSelf);
