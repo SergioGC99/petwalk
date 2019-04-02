@@ -129,6 +129,10 @@ Class Owner{
         foreach($this->getPets() as $item){
             array_push($pet, json_decode($item->toJson()));
         }
+        $phpSelf = $_SERVER['PHP_SELF'];
+            $urlParts = explode('/', $phpSelf);
+            $lengthLastPart = strlen($urlParts[sizeof($urlParts)-1]);
+            $photosPath = substr($phpSelf,0,strlen($phpSelf)- $lengthLastPart);
        
         return json_encode(array(
             'id'=>$this->id,
